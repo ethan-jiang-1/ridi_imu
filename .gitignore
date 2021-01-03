@@ -1,2 +1,5 @@
 venv
 ds_rdii
+
+__pycache__
+python/__pycache__
