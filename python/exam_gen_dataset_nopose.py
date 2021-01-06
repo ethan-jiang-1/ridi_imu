@@ -44,10 +44,6 @@ def _output_all_files(df_data, output_dir, data_mat):
 
 
 def _exec_generate_one_dataset_nopose(args):
-    output_dir = args.dir + '/processed'
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
     gyro_input = np.genfromtxt(args.dir + '/gyro.txt')
     acce_input = np.genfromtxt(args.dir + '/acce.txt')
     linacce_input = np.genfromtxt(args.dir + '/linacce.txt')
@@ -108,8 +104,13 @@ def _exec_generate_one_dataset_nopose(args):
                                rv_input[:, 1:]], axis=1)
 
     df_data = pandas.DataFrame(data_mat, columns=column_list)
+    
+    output_dir = args.dir + '/processed'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     if args.output_files:
         _output_all_files(df_data, output_dir, data_mat)
+    
     print(df_data)
     return df_data
 

@@ -134,10 +134,6 @@ def _find_root_dir_and_datalist(args):
 
 
 def _exec_generate_one_dataset(args, data_root):
-    output_folder = data_root + '/processed'
-    if not os.path.isdir(output_folder):
-        os.makedirs(output_folder)
-    
     # drop the head and tail
     pose_data_all = np.genfromtxt(data_root+'/pose.txt')
     pose_data = pose_data_all[args.skip_front:-args.skip_end, :]
@@ -232,6 +228,9 @@ def _exec_generate_one_dataset(args, data_root):
     #     write_ply_to_file(path=output_folder + '/trajectory.ply', position=pose_data[:, 1:4],
     #                       orientation=pose_data[:, -4:])
 
+    output_folder = data_root + '/processed'
+    if not os.path.isdir(output_folder):
+        os.makedirs(output_folder)
     if args.output_files:
         _output_all_files(args, output_folder,
                             data_pandas,  data_mat, pose_data)
