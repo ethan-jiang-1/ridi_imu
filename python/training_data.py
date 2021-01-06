@@ -184,6 +184,7 @@ def get_training_data(data_all, option, sample_points=None, extra_args=None):
     time_stamp = data_all['time'].values / 1e09
 
     targets = None
+    print("option.target_", option.target_)
 
     if option.target_ == 'speed_magnitude':
         targets = np.linalg.norm(compute_speed(time_stamp, pose_data), axis=1)
@@ -206,6 +207,7 @@ def get_training_data(data_all, option, sample_points=None, extra_args=None):
         if 'feature_smooth_sigma' in extra_args:
             gaussian_sigma = extra_args['feature_smooth_sigma']
 
+    print("option.feature_", option.feature_)
     if option.feature_ == 'direct':
         features = compute_direct_features(data_used, sample_points, option.window_size_, gaussian_sigma)
     elif option.feature_ == 'fourier':

@@ -1,0 +1,55 @@
+Loading dataset /Users/bowhead/ridi_imu/ds_rdii/dan_body1/processed/data.csv, type: body
+Loading dataset /Users/bowhead/ridi_imu/ds_rdii/dan_body2/processed/data.csv, type: body
+Loading dataset /Users/bowhead/ridi_imu/ds_rdii/hang_body_slow1/processed/data.csv, type: body
+Loading dataset /Users/bowhead/ridi_imu/ds_rdii/hang_body_fast1/processed/data.csv, type: body
+Loading dataset /Users/bowhead/ridi_imu/ds_rdii/hang_body_side1/processed/data.csv, type: body
+Loading dataset /Users/bowhead/ridi_imu/ds_rdii/hang_body_normal1/processed/data.csv, type: body
+Loading dataset /Users/bowhead/ridi_imu/ds_rdii/hang_body_backward1/processed/data.csv, type: body
+Loading dataset /Users/bowhead/ridi_imu/ds_rdii/hang_body_backward3/processed/data.csv, type: body
+Loading dataset /Users/bowhead/ridi_imu/ds_rdii/hang_body_backward4/processed/data.csv, type: body
+loaded raw data:
+feature_all:  (13661, 1200)
+response_all: (13661, 3)
+Data loaded. Total number of samples:  13661
+13661 samples in body(label 0)
+Randomly splitting the dataset to 12294/1367 samples for training/testing.
+No option file is provided, running grid search
+Fitting 3 folds for each of 4 candidates, totalling 12 fits
+[CV 1/3] END ............................C=1.0, epsilon=0.01; total time= 5.3min
+[CV 3/3] END ............................C=1.0, epsilon=0.01; total time= 5.3min
+[CV 2/3] END ............................C=1.0, epsilon=0.01; total time= 5.3min
+[CV 1/3] END ...........................C=1.0, epsilon=0.001; total time= 6.9min
+[CV 3/3] END ...........................C=1.0, epsilon=0.001; total time= 6.9min
+[CV 2/3] END ...........................C=1.0, epsilon=0.001; total time= 8.2min
+[CV 1/3] END ...........................C=10.0, epsilon=0.01; total time= 4.7min
+[CV 2/3] END ...........................C=10.0, epsilon=0.01; total time= 4.7min
+[CV 3/3] END ...........................C=10.0, epsilon=0.01; total time= 4.3min
+[CV 3/3] END ..........................C=10.0, epsilon=0.001; total time= 8.2min
+[CV 1/3] END ..........................C=10.0, epsilon=0.001; total time= 8.3min
+[CV 2/3] END ..........................C=10.0, epsilon=0.001; total time= 8.2min
+Fitting 3 folds for each of 4 candidates, totalling 12 fits
+[CV 1/3] END ............................C=1.0, epsilon=0.01; total time= 4.9min
+[CV 2/3] END ............................C=1.0, epsilon=0.01; total time= 4.9min
+[CV 3/3] END ............................C=1.0, epsilon=0.01; total time= 4.9min
+[CV 1/3] END ...........................C=1.0, epsilon=0.001; total time= 5.6min
+[CV 3/3] END ...........................C=1.0, epsilon=0.001; total time= 5.6min
+[CV 2/3] END ...........................C=1.0, epsilon=0.001; total time= 5.6min
+[CV 2/3] END ...........................C=10.0, epsilon=0.01; total time= 7.4min
+[CV 1/3] END ...........................C=10.0, epsilon=0.01; total time= 7.5min
+[CV 3/3] END ...........................C=10.0, epsilon=0.01; total time= 7.6min
+[CV 2/3] END ..........................C=10.0, epsilon=0.001; total time= 9.4min
+[CV 1/3] END ..........................C=10.0, epsilon=0.001; total time= 9.4min
+[CV 3/3] END ..........................C=10.0, epsilon=0.001; total time= 9.4min
+All done
+Sample used for training:  12294
+Training regressor for class 0, channel 0
+Regressor for class 0  channel 0 trained. Training error: 0.989883(r2), 0.000347(MSE)
+Training regressor for class 0, channel 1
+Regressor for class 0  channel 1 trained. Training error: 0.997981(r2), 0.001242(MSE)
+All done
+Running trained model on testing set: 1367
+Error for class 0, channel 0: 0.003126(MSE)
+Error for class 0, channel 1: 0.010623(MSE)
+Overall regression error for channel 0: 0.003126(MSE)
+Overall regression error for channel 1: 0.010623(MSE)
+<python.regression_cascade.SVRCascade object at 0x7f84888d5eb0>

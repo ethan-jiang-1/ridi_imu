@@ -95,7 +95,8 @@ if __name__ == '__main__':
         root_dir = os.path.dirname(args.list) + '/'
         with open(args.list) as f:
             for s in f.readlines():
-                if s[0] is not '#':
+                #if s[0] is not '#':
+                if s[0] != '#':
                     dataset_list.append(s.strip('\n'))
     else:
         raise ValueError('No data specified')
