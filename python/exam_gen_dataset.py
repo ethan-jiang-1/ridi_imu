@@ -81,7 +81,11 @@ def interpolate_3dvector_linear(input, input_timestamp, output_timestamp):
     return interpolated
 
 
-def _output_all_files(args, output_folder, data_pandas,  data_mat, pose_data):
+def _output_all_files(args, data_pandas,  data_mat, pose_data):
+    output_folder = app_root + '/python/_new_processed'
+    if not os.path.isdir(output_folder):
+        os.makedirs(output_folder)  
+
     data_pandas.to_csv(output_folder + '/data.csv')
     print('Dataset written to ' + output_folder + '/data.txt')
 
@@ -108,13 +112,6 @@ def _clean_result_file(args, data_root):
         command = 'rm -r %s/result*' % (data_root)
         subprocess.call(command, shell=True)
 
-
-def _fake_args(args):
-    args.recompute = True
-    args.path = "/dan_body1"
-    return args
-
-
 def _find_root_dir_and_datalist(args):
     dataset_list = []
     root_dir = ''
@@ -124,7 +121,8 @@ def _find_root_dir_and_datalist(args):
         root_dir = os.path.dirname(args.list) + '/'
         with open(args.list) as f:
             for s in f.readlines():
-                if s[0] is not '#':
+                # if s[0] is not '#':
+                if s[0] != '#':
                     dataset_list.append(s.strip('\n'))
     else:
         raise ValueError('No data specified')
@@ -135,7 +133,7 @@ def _find_root_dir_and_datalist(args):
 
 def _exec_generate_one_dataset(args, data_root):
     # drop the head and tail
-    pose_data_all = np.genfromtxt(data_root+'/pose.txt')
+    pose_data_all = np.genfromtxt(data_root + '/pose.txt')
     pose_data = pose_data_all[args.skip_front:-args.skip_end, :]
 
     # swap tango's orientation from [x,y,z,w] to [w,x,y,z]
@@ -181,9 +179,7 @@ def _exec_generate_one_dataset(args, data_root):
     output_accelerometer_linear = interpolate_3dvector_linear(acce_data[:, 1:], acce_data[:, 0], output_timestamp)
     output_linacce_linear = interpolate_3dvector_linear(linacce_data[:, 1:], linacce_data[:, 0], output_timestamp)
     output_gravity_linear = interpolate_3dvector_linear(gravity_data[:, 1:], gravity_data[:, 0], output_timestamp)
-    output_magnet_linear = np.zeros([output_timestamp.shape[0], 3])
-    if not args.no_magnet:
-        output_magnet_linear = interpolate_3dvector_linear(magnet_data[:, 1:], magnet_data[:, 0], output_timestamp)
+    output_magnet_linear = interpolate_3dvector_linear(magnet_data[:, 1:], magnet_data[:, 0], output_timestamp)
 
     # Convert rotation vector to quaternion
     output_orientation = interpolate_quaternion_linear(orientation_data[:, 1:], orientation_data[:, 0], output_timestamp)
@@ -208,36 +204,9 @@ def _exec_generate_one_dataset(args, data_root):
     data_pandas = pandas.DataFrame(data_mat, columns=column_list)
     print(data_pandas)
 
-    # data_pandas.to_csv(output_folder + '/data.csv')
-    # print('Dataset written to ' + output_folder + '/data.txt')
-
-    # # write data in plain text file for C++
-    # with open(output_folder + '/data_plain.txt', 'w') as f:
-    #     f.write('{} {}\n'.format(data_mat.shape[0], data_mat.shape[1]))
-    #     for i in range(data_mat.shape[0]):
-    #         for j in range(data_mat.shape[1]):
-    #             f.write('{}\t'.format(data_mat[i][j]))
-    #         f.write('\n')
-
-    # if not args.no_trajectory:
-    #     from write_trajectory_to_ply import write_ply_to_file
-
-    #     print("Writing trajectory to ply file")
-    #     viewing_dir = np.zeros([data_mat.shape[0], 3], dtype=float)
-    #     viewing_dir[:, 2] = -1.0
-    #     write_ply_to_file(path=output_folder + '/trajectory.ply', position=pose_data[:, 1:4],
-    #                       orientation=pose_data[:, -4:])
-
-    output_folder = data_root + '/processed'
-    if not os.path.isdir(output_folder):
-        os.makedirs(output_folder)
     if args.output_files:
-        _output_all_files(args, output_folder,
-                            data_pandas,  data_mat, pose_data)
+        _output_all_files(args, data_pandas,  data_mat, pose_data)
 
-    # if args.clear_result:
-    #     command = 'rm -r %s/result*' % (data_root)
-    #     subprocess.call(command, shell=True)
     _clean_result_file(args, data_root)
 
     return data_pandas
@@ -282,6 +251,13 @@ def _exec_generate_dataset(args):
         total_length, total_length / 60.0))
     for k, v in length_dict.items():
         print(k + ': {:.2f}s ({:.2f}min)'.format(v, v / 60.0))
+
+
+def _fake_args(args):
+    args.recompute = True
+    args.path = "/dan_body1"
+    args.output_files = True
+    return args
 
 
 if __name__ == '__main__':
