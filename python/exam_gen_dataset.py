@@ -113,6 +113,7 @@ def _output_trajectory_pose(args, pose_data):
 
     pd_pose = pandas.DataFrame(pose_data, columns=["time", "pos_x", "pos_y", "pos_z", "ori_w", "ori_x", "ori_y", "ori_z"])
     print(pd_pose)
+    print(pd_pose.describe())
 
     position = pose_data[:, 1:4] #tango's position x, y, z
     oritation = pose_data[:, -4:] #tango's orientation have swapped from [x,y,z,w] to [w,x,y,z]
@@ -212,6 +213,7 @@ def _exec_generate_one_dataset(args, data_root):
 
     data_df = pandas.DataFrame(data_mat, columns=column_list)
     print(data_df)
+    print(data_df.describe())
 
     if args.output_data:
         _output_data(args, data_df)
