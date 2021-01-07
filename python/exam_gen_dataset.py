@@ -81,12 +81,12 @@ def interpolate_3dvector_linear(input, input_timestamp, output_timestamp):
     return interpolated
 
 
-def _output_all_files(args, data_pandas,  data_mat, pose_data):
+def _output_all_files(args, data_df,  data_mat, pose_data):
     output_folder = app_root + '/python/_new_processed'
     if not os.path.isdir(output_folder):
         os.makedirs(output_folder)  
 
-    data_pandas.to_csv(output_folder + '/data.csv')
+    data_df.to_csv(output_folder + '/data.csv')
     print('Dataset written to ' + output_folder + '/data.txt')
 
     # write data in plain text file for C++
@@ -103,8 +103,13 @@ def _output_all_files(args, data_pandas,  data_mat, pose_data):
         print("Writing trajectory to ply file")
         viewing_dir = np.zeros([data_mat.shape[0], 3], dtype=float)
         viewing_dir[:, 2] = -1.0
-        write_ply_to_file(path=output_folder + '/trajectory.ply', position=pose_data[:, 1:4],
-                          orientation=pose_data[:, -4:])
+
+        pd_pose = pandas.DataFrame(pose_data, columns=["time", "pos_x", "pos_y", "pos_z", "ori_w", "ori_x", "ori_y", "ori_z"])
+        print(pd_pose)
+
+        position = pose_data[:, 1:4] #tango's position x, y, z
+        oritation = pose_data[:, -4:] #tango's orientation have swapped from [x,y,z,w] to [w,x,y,z]
+        write_ply_to_file(path=output_folder + '/trajectory.ply', position=position, orientation=oritation)
 
 
 def _clean_result_file(args, data_root):
@@ -140,10 +145,8 @@ def _exec_generate_one_dataset(args, data_root):
     pose_data[:, [-4, -3, -2, -1]] = pose_data[:, [-1, -4, -3, -2]]
     # For some reason there might be a few duplicated records...
     if not args.no_remove_duplicate:
-        unique_ts, unique_inds = np.unique(
-            pose_data[:, 0], return_index=True)
-        print('Portion of unique records: ',
-                unique_inds.shape[0] / pose_data.shape[0])
+        unique_ts, unique_inds = np.unique(pose_data[:, 0], return_index=True)
+        print('Portion of unique records: ', unique_inds.shape[0] / pose_data.shape[0])
         pose_data = pose_data[unique_inds, :]
     
     output_timestamp = pose_data[:, 0]
@@ -165,7 +168,6 @@ def _exec_generate_one_dataset(args, data_root):
 
     magnet_data = np.genfromtxt(data_root + '/magnet.txt')
     print('Magnetometer: {:.2f}Hz'.format((magnet_data.shape[0] - 1.0) * nano_to_sec / (magnet_data[-1, 0] - magnet_data[0, 0])))
-
 
     orientation_data = np.genfromtxt(data_root + '/orientation.txt')
     # swap from x,y,z,w to w,x,y,z
@@ -201,15 +203,16 @@ def _exec_generate_one_dataset(args, data_root):
                                 pose_data[:, -4:],
                                 output_orientation], axis=1)
 
-    data_pandas = pandas.DataFrame(data_mat, columns=column_list)
-    print(data_pandas)
+    data_df = pandas.DataFrame(data_mat, columns=column_list)
+    print(data_df)
 
     if args.output_files:
-        _output_all_files(args, data_pandas,  data_mat, pose_data)
+        _output_all_files(args, data_df,  data_mat, pose_data)
+    
+    if args.clean_result:
+        _clean_result_file(args, data_root)
 
-    _clean_result_file(args, data_root)
-
-    return data_pandas
+    return data_df
 
 
 def _exec_generate_dataset(args):
@@ -257,6 +260,7 @@ def _fake_args(args):
     args.recompute = True
     args.path = "/dan_body1"
     args.output_files = True
+    args.clean_result = False
     return args
 
 
