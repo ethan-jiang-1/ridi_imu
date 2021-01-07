@@ -19,6 +19,15 @@ def write_ply_to_file(path, position, orientation, acceleration=None,
     :param trajectory_color: (optional) the color of the trajectory. The default is [255, 0, 0] (red)
     :return: None
     """
+
+    """
+    global_roration default
+    >>> np.identity(3, float)
+    array([[1., 0., 0.],
+            [0., 1., 0.],
+            [0., 0., 1.]])
+    """
+
     num_cams = position.shape[0]
     assert orientation.shape[0] == num_cams
 
@@ -53,11 +62,11 @@ def write_ply_to_file(path, position, orientation, acceleration=None,
         global_axes = np.matmul(global_rotation, np.matmul(quaternion.as_rotation_matrix(q), local_axis))
         for k in range(num_axis):
             for j in range(kpoints):
-                axes_pts = position_transformed[sample_pt[i]].flatten() +\
-                           global_axes[:, k].flatten() * j * length / kpoints
+                axes_pts = position_transformed[sample_pt[i]].flatten() + global_axes[:, k].flatten() * j * length / kpoints
                 app_vertex[k*kpoints + j] = tuple([*axes_pts, *axis_color[k]])
 
         positions_data = np.concatenate([positions_data, app_vertex], axis=0)
+
     vertex_element = plyfile.PlyElement.describe(positions_data, 'vertex')
     plyfile.PlyData([vertex_element], text=True).write(path)
 

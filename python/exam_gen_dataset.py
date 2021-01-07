@@ -80,15 +80,19 @@ def interpolate_3dvector_linear(input, input_timestamp, output_timestamp):
     interpolated = func(output_timestamp)
     return interpolated
 
-
-def _output_all_files(args, data_df,  data_mat, pose_data):
+def _ensure_output_folder():
     output_folder = app_root + '/python/_new_processed'
     if not os.path.isdir(output_folder):
-        os.makedirs(output_folder)  
+        os.makedirs(output_folder)
+    return output_folder
+
+def _output_data(args, data_df):
+    output_folder = _ensure_output_folder()
 
     data_df.to_csv(output_folder + '/data.csv')
     print('Dataset written to ' + output_folder + '/data.txt')
 
+    data_mat = data_df.to_numpy()
     # write data in plain text file for C++
     with open(output_folder + '/data_plain.txt', 'w') as f:
         f.write('{} {}\n'.format(data_mat.shape[0], data_mat.shape[1]))
@@ -97,19 +101,22 @@ def _output_all_files(args, data_df,  data_mat, pose_data):
                 f.write('{}\t'.format(data_mat[i][j]))
             f.write('\n')
 
-    if not args.no_trajectory:
-        from write_trajectory_to_ply import write_ply_to_file
 
-        print("Writing trajectory to ply file")
-        viewing_dir = np.zeros([data_mat.shape[0], 3], dtype=float)
-        viewing_dir[:, 2] = -1.0
+def _output_trajectory_pose(args, pose_data):
+    output_folder = _ensure_output_folder()
 
-        pd_pose = pandas.DataFrame(pose_data, columns=["time", "pos_x", "pos_y", "pos_z", "ori_w", "ori_x", "ori_y", "ori_z"])
-        print(pd_pose)
+    from write_trajectory_to_ply import write_ply_to_file
 
-        position = pose_data[:, 1:4] #tango's position x, y, z
-        oritation = pose_data[:, -4:] #tango's orientation have swapped from [x,y,z,w] to [w,x,y,z]
-        write_ply_to_file(path=output_folder + '/trajectory.ply', position=position, orientation=oritation)
+    #print("Writing trajectory to ply file")
+    #viewing_dir = np.zeros([data_mat.shape[0], 3], dtype=float)
+    #viewing_dir[:, 2] = -1.0
+
+    pd_pose = pandas.DataFrame(pose_data, columns=["time", "pos_x", "pos_y", "pos_z", "ori_w", "ori_x", "ori_y", "ori_z"])
+    print(pd_pose)
+
+    position = pose_data[:, 1:4] #tango's position x, y, z
+    oritation = pose_data[:, -4:] #tango's orientation have swapped from [x,y,z,w] to [w,x,y,z]
+    write_ply_to_file(path=output_folder + '/trajectory.ply', position=position, orientation=oritation)
 
 
 def _clean_result_file(args, data_root):
@@ -206,9 +213,12 @@ def _exec_generate_one_dataset(args, data_root):
     data_df = pandas.DataFrame(data_mat, columns=column_list)
     print(data_df)
 
-    if args.output_files:
-        _output_all_files(args, data_df,  data_mat, pose_data)
-    
+    if args.output_data:
+        _output_data(args, data_df)
+
+    if args.output_trajectory_pose:
+        _output_trajectory_pose(args, pose_data)
+
     if args.clean_result:
         _clean_result_file(args, data_root)
 
@@ -259,7 +269,8 @@ def _exec_generate_dataset(args):
 def _fake_args(args):
     args.recompute = True
     args.path = "/dan_body1"
-    args.output_files = True
+    args.output_data = True
+    args.output_trajectory_pose = True
     args.clean_result = False
     return args
 

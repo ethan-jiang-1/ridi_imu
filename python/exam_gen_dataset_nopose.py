@@ -4,8 +4,8 @@ import math
 import argparse
 import numpy as np
 import quaternion
-import matplotlib.pyplot as plt
-import plyfile
+#import matplotlib.pyplot as plt
+#import plyfile
 import pandas
 import scipy
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
