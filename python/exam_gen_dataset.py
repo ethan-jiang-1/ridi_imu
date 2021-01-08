@@ -105,7 +105,8 @@ def _output_data(args, data_df):
 def _output_trajectory_pose(args, pose_data):
     output_folder = _ensure_output_folder()
 
-    from write_trajectory_to_ply import write_ply_to_file
+    #from write_trajectory_to_ply import write_ply_to_file
+    from python.ex_write_trajectory_to_ply import ex_write_ply_to_file as write_ply_to_file
 
     #print("Writing trajectory to ply file")
     #viewing_dir = np.zeros([data_mat.shape[0], 3], dtype=float)
@@ -117,7 +118,15 @@ def _output_trajectory_pose(args, pose_data):
 
     position = pose_data[:, 1:4] #tango's position x, y, z
     oritation = pose_data[:, -4:] #tango's orientation have swapped from [x,y,z,w] to [w,x,y,z]
-    write_ply_to_file(path=output_folder + '/trajectory.ply', position=position, orientation=oritation)
+    ve = write_ply_to_file(path=output_folder + '/trajectory.ply', 
+                      position=position, 
+                      orientation=oritation,
+                      kpoints=args.kpoints, 
+                      interval=args.interval)
+    print(ve)
+
+    from python.ex_ply_new_processed import ex_ply_trajectory_np
+    ex_ply_trajectory_np(filename=output_folder + '/trajectory.ply')
 
 
 def _clean_result_file(args, data_root):
@@ -270,7 +279,11 @@ def _exec_generate_dataset(args):
 
 def _fake_args(args):
     args.recompute = True
-    args.path = "/dan_body1"
+    
+    args.path = "/hang_bag_speed2"
+    args.kpoints = 10
+    args.interval = 100
+
     args.output_data = True
     args.output_trajectory_pose = True
     args.clean_result = False

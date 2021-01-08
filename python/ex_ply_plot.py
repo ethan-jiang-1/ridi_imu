@@ -66,6 +66,7 @@ def ply_trajectory_cmp(ds_name):
     # p.close()
 
 
-#ply_plot_demo()
-#ply_trajectory_sep("dan_body1")
-ply_trajectory_cmp("ruixuan_body1")
+if __name__ == '__main__':
+    #ply_plot_demo()
+    #ply_trajectory_sep("dan_body1")
+    ply_trajectory_cmp("ruixuan_body1")
